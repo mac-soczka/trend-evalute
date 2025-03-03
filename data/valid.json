@@ -1,0 +1,7 @@
+[
+    {"text": "Fantastic quality and great price!", "label": 1},
+    {"text": "Awful experience, will never buy again.", "label": 0},
+    {"text": "Decent product, but could be better.", "label": 0},
+    {"text": "I'm impressed with the durability.", "label": 1},
+    {"text": "Completely useless, waste of money.", "label": 0}
+]

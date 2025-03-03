@@ -1,0 +1,59 @@
+[2025-03-03 07:28:15] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 07:28:16] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 07:28:16] [INFO] 🚀 Using device: cuda
+[2025-03-03 07:29:07] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 07:29:09] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 07:29:09] [INFO] 🚀 Using device: cuda
+[2025-03-03 10:25:00] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 10:25:00] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 10:25:00] [INFO] 🚀 Using device: cuda
+[2025-03-03 10:32:23] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 10:32:24] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 10:32:24] [INFO] 🚀 Using device: cuda
+[2025-03-03 12:20:24] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 12:20:24] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 12:20:24] [INFO] 🚀 Using device: cuda
+[2025-03-03 12:23:37] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 12:23:37] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 12:23:37] [INFO] 🚀 Using device: cuda
+[2025-03-03 12:23:38] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-03 12:29:18] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 12:29:18] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 12:29:18] [INFO] 🚀 Using device: cuda
+[2025-03-03 12:29:18] [INFO] ✅ Successfully loaded dataset.
+[2025-03-03 12:29:18] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-03 12:29:33] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-03 12:29:33] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.18426513671875, 'eval_runtime': 0.0225, 'eval_samples_per_second': 222.59, 'eval_steps_per_second': 44.518, 'epoch': 3.0}
+[2025-03-03 12:29:33] [INFO] 🎉 All fine-tuning tasks completed successfully!
+[2025-03-03 12:40:46] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 12:40:47] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 12:40:47] [INFO] 🚀 Using device: cuda
+[2025-03-03 12:40:47] [INFO] ✅ Successfully loaded dataset.
+[2025-03-03 12:40:47] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-03 12:41:01] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-03 12:41:01] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.19193115830421448, 'eval_runtime': 0.0274, 'eval_samples_per_second': 182.712, 'eval_steps_per_second': 36.542, 'epoch': 3.0}
+[2025-03-03 12:41:01] [INFO] 🎉 All fine-tuning tasks completed successfully!
+[2025-03-03 13:41:04] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 13:41:04] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 13:41:04] [INFO] 🚀 Using device: cuda
+[2025-03-03 13:41:04] [INFO] ✅ Successfully loaded dataset.
+[2025-03-03 13:41:04] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-03 13:41:19] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-03 13:41:19] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.40190428495407104, 'eval_runtime': 0.0189, 'eval_samples_per_second': 264.882, 'eval_steps_per_second': 52.976, 'epoch': 3.0}
+[2025-03-03 13:41:19] [INFO] 🛠️ Fine-tuning model: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B...
+[2025-03-03 13:41:31] [ERROR] ❌ Training failed for deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B: Cannot handle batch sizes > 1 if no padding token is defined.
+[2025-03-03 13:41:31] [INFO] 🛠️ Fine-tuning model: meta-llama/Llama-3.2-1B...
+[2025-03-03 13:41:39] [ERROR] ❌ Tokenization failed for meta-llama/Llama-3.2-1B: Asking to pad but the tokenizer does not have a padding token. Please select a token to use as `pad_token` `(tokenizer.pad_token = tokenizer.eos_token e.g.)` or add a new pad token via `tokenizer.add_special_tokens({'pad_token': '[PAD]'})`.
+[2025-03-03 13:41:39] [INFO] 🎉 All fine-tuning tasks completed successfully!
+[2025-03-03 15:48:39] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-03 15:48:40] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-03 15:48:40] [INFO] 🚀 Using device: cuda
+[2025-03-03 15:48:40] [INFO] ✅ Successfully loaded dataset.
+[2025-03-03 15:48:40] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-03 15:48:54] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-03 15:48:54] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.21440429985523224, 'eval_runtime': 0.0238, 'eval_samples_per_second': 209.866, 'eval_steps_per_second': 41.973, 'epoch': 3.0}
+[2025-03-03 15:48:54] [INFO] 🛠️ Fine-tuning model: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B...
+[2025-03-03 15:49:06] [ERROR] ❌ Training failed for deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B: Cannot handle batch sizes > 1 if no padding token is defined.
+[2025-03-03 15:49:06] [INFO] 🛠️ Fine-tuning model: meta-llama/Llama-3.2-1B...
+[2025-03-03 15:49:13] [ERROR] ❌ Tokenization failed for meta-llama/Llama-3.2-1B: Asking to pad but the tokenizer does not have a padding token. Please select a token to use as `pad_token` `(tokenizer.pad_token = tokenizer.eos_token e.g.)` or add a new pad token via `tokenizer.add_special_tokens({'pad_token': '[PAD]'})`.
+[2025-03-03 15:49:13] [INFO] 🎉 All fine-tuning tasks completed successfully!

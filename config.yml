@@ -1,0 +1,23 @@
+models:
+  - nlptown/bert-base-multilingual-uncased-sentiment
+  - deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+  - meta-llama/Llama-3.2-1B
+
+tasks:
+  - hellaswag
+  - mmlu
+  - arc_challenge
+  - lambada
+  - winogrande
+  - piqa
+  ##- openbookqa
+  ## - gsm8k
+  ## - triviaqa
+  ## - truthfulqa
+
+hf_cache_dir: "hf_cache"
+
+zeno:
+  enabled: true
+  data_path: "results"
+  project_name: "Zeno Visualization"

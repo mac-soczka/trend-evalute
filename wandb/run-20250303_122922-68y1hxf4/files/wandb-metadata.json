@@ -1,0 +1,41 @@
+{
+  "os":  "Windows-10-10.0.26100-SP0",
+  "python":  "CPython 3.11.9",
+  "startedAt":  "2025-03-03T12:29:22.321634Z",
+  "program":  "C:\\Users\\msocz\\workbench\\oliveai\\trend-evalute\\fine_tune.py",
+  "codePath":  "fine_tune.py",
+  "git":  {
+    "commit":  "971db3888ec8d03474fac749645d536a0f4b4eb6"
+  },
+  "email":  "m.soczka@gmail.com",
+  "root":  "C:\\Users\\msocz\\workbench\\oliveai\\trend-evalute",
+  "host":  "jenny",
+  "executable":  "C:\\Users\\msocz\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+  "codePathLocal":  "fine_tune.py",
+  "cpu_count":  12,
+  "cpu_count_logical":  24,
+  "gpu":  "NVIDIA GeForce RTX 4070 Ti SUPER",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "999405121536",
+      "used":  "781451907072"
+    }
+  },
+  "memory":  {
+    "total":  "68589137920"
+  },
+  "cpu":  {
+    "count":  12,
+    "countLogical":  24
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 4070 Ti SUPER",
+      "memoryTotal":  "17171480576",
+      "cudaCores":  8448,
+      "architecture":  "Ada"
+    }
+  ],
+  "cudaVersion":  "12.8"
+}

@@ -1,0 +1,15 @@
+{"time":"2025-03-03T15:48:43.6557082Z","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\msocz\\workbench\\oliveai\\trend-evalute\\wandb\\run-20250303_154843-wfprnvdh\\logs\\debug-core.log"}
+{"time":"2025-03-03T15:48:43.7642743Z","level":"INFO","msg":"created new stream","id":"wfprnvdh"}
+{"time":"2025-03-03T15:48:43.7648445Z","level":"INFO","msg":"stream: started","id":"wfprnvdh"}
+{"time":"2025-03-03T15:48:43.7648445Z","level":"INFO","msg":"handler: started","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:48:43.7648445Z","level":"INFO","msg":"writer: Do: started","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:48:43.7648445Z","level":"INFO","msg":"sender: started","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:48:44.0769125Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-03T15:49:13.8435183Z","level":"INFO","msg":"stream: closing","id":"wfprnvdh"}
+{"time":"2025-03-03T15:49:13.8435183Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-03T15:49:13.8441895Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-03T15:49:14.4520881Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-03T15:49:14.6984767Z","level":"INFO","msg":"handler: closed","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:49:14.6984767Z","level":"INFO","msg":"sender: closed","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:49:14.6984767Z","level":"INFO","msg":"writer: Close: closed","stream_id":"wfprnvdh"}
+{"time":"2025-03-03T15:49:14.6984767Z","level":"INFO","msg":"stream: closed","id":"wfprnvdh"}

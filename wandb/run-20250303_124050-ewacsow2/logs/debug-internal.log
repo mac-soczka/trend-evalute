@@ -1,0 +1,15 @@
+{"time":"2025-03-03T12:40:50.6651177Z","level":"INFO","msg":"stream: starting","core version":"0.19.7","symlink path":"C:\\Users\\msocz\\workbench\\oliveai\\trend-evalute\\wandb\\run-20250303_124050-ewacsow2\\logs\\debug-core.log"}
+{"time":"2025-03-03T12:40:50.7746281Z","level":"INFO","msg":"created new stream","id":"ewacsow2"}
+{"time":"2025-03-03T12:40:50.7746281Z","level":"INFO","msg":"stream: started","id":"ewacsow2"}
+{"time":"2025-03-03T12:40:50.7746281Z","level":"INFO","msg":"writer: Do: started","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:40:50.7746281Z","level":"INFO","msg":"handler: started","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:40:50.7751871Z","level":"INFO","msg":"sender: started","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:40:51.044792Z","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-03T12:41:01.5963981Z","level":"INFO","msg":"stream: closing","id":"ewacsow2"}
+{"time":"2025-03-03T12:41:01.5963981Z","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-03T12:41:01.5971387Z","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-03T12:41:02.4140749Z","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-03T12:41:02.6302504Z","level":"INFO","msg":"handler: closed","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:41:02.6302504Z","level":"INFO","msg":"writer: Close: closed","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:41:02.6302504Z","level":"INFO","msg":"sender: closed","stream_id":"ewacsow2"}
+{"time":"2025-03-03T12:41:02.6307549Z","level":"INFO","msg":"stream: closed","id":"ewacsow2"}

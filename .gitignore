@@ -1,0 +1,10 @@
+node_modules/
+eval_error.txt
+eval_log.txt
+lm-evaluation-harness
+lmms-eval
+LLaVA-NeXT
+.env
+hf_cache
+fine_tuned_models
+results

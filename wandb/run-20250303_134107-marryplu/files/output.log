@@ -1,0 +1,27 @@
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:10<00:00,  1.75s/it]
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 162.58it/s]
+{'eval_loss': 0.592578113079071, 'eval_runtime': 0.038, 'eval_samples_per_second': 131.682, 'eval_steps_per_second': 26.336, 'epoch': 1.0}
+{'eval_loss': 0.4649902284145355, 'eval_runtime': 0.0339, 'eval_samples_per_second': 147.425, 'eval_steps_per_second': 29.485, 'epoch': 2.0}
+{'eval_loss': 0.40190428495407104, 'eval_runtime': 0.0421, 'eval_samples_per_second': 118.682, 'eval_steps_per_second': 23.736, 'epoch': 3.0}
+{'train_runtime': 12.0941, 'train_samples_per_second': 2.481, 'train_steps_per_second': 0.496, 'train_loss': 0.5470987955729166, 'epoch': 3.0}
+[2025-03-03 13:41:19] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-03 13:41:19] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.40190428495407104, 'eval_runtime': 0.0189, 'eval_samples_per_second': 264.882, 'eval_steps_per_second': 52.976, 'epoch': 3.0}
+[2025-03-03 13:41:19] [INFO] 🛠️ Fine-tuning model: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B...
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Some weights of Qwen2ForSequenceClassification were not initialized from the model checkpoint at deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B and are newly initialized: ['score.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Map: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 10/10 [00:00<00:00, 494.08 examples/s]
+Map: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 5/5 [00:00<00:00, 435.78 examples/s]
+C:\Users\msocz\AppData\Local\Programs\Python\Python311\Lib\site-packages\transformers\training_args.py:1594: FutureWarning: `evaluation_strategy` is deprecated and will be removed in version 4.46 of 🤗 Transformers. Use `eval_strategy` instead
+  warnings.warn(
+C:\Users\msocz\workbench\oliveai\trend-evalute\fine_tune.py:126: FutureWarning: `tokenizer` is deprecated and will be removed in version 5.0.0 for `Trainer.__init__`. Use `processing_class` instead.
+  trainer = Trainer(
+A ConfigError was raised whilst setting the number of model parameters in Weights & Biases config.
+  0%|                                                                                                                                                                  | 0/6 [00:00<?, ?it/s]Some weights of LlamaForSequenceClassification were not initialized from the model checkpoint at meta-llama/Llama-3.2-1B and are newly initialized: ['score.weight']
+[2025-03-03 13:41:31] [ERROR] ❌ Training failed for deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B: Cannot handle batch sizes > 1 if no padding token is defined.
+[2025-03-03 13:41:31] [INFO] 🛠️ Fine-tuning model: meta-llama/Llama-3.2-1B...
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Map:   0%|                                                                                                                                                     | 0/10 [00:00<?, ? examples/s]
+Map:   0%|                                                                                                                                                     | 0/10 [00:00<?, ? examples/s]
+[2025-03-03 13:41:39] [ERROR] ❌ Tokenization failed for meta-llama/Llama-3.2-1B: Asking to pad but the tokenizer does not have a padding token. Please select a token to use as `pad_token` `(tokenizer.pad_token = tokenizer.eos_token e.g.)` or add a new pad token via `tokenizer.add_special_tokens({'pad_token': '[PAD]'})`.
+[2025-03-03 13:41:39] [INFO] 🎉 All fine-tuning tasks completed successfully!
