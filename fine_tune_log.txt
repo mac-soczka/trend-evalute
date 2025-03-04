@@ -57,3 +57,15 @@
 [2025-03-03 15:49:06] [INFO] 🛠️ Fine-tuning model: meta-llama/Llama-3.2-1B...
 [2025-03-03 15:49:13] [ERROR] ❌ Tokenization failed for meta-llama/Llama-3.2-1B: Asking to pad but the tokenizer does not have a padding token. Please select a token to use as `pad_token` `(tokenizer.pad_token = tokenizer.eos_token e.g.)` or add a new pad token via `tokenizer.add_special_tokens({'pad_token': '[PAD]'})`.
 [2025-03-03 15:49:13] [INFO] 🎉 All fine-tuning tasks completed successfully!
+[2025-03-04 07:26:36] [INFO] ✅ Using custom HuggingFace cache directory: hf_cache
+[2025-03-04 07:26:37] [INFO] ✅ Successfully logged into Hugging Face.
+[2025-03-04 07:26:37] [INFO] 🚀 Using device: cuda
+[2025-03-04 07:26:37] [INFO] ✅ Successfully loaded dataset.
+[2025-03-04 07:26:37] [INFO] 🛠️ Fine-tuning model: nlptown/bert-base-multilingual-uncased-sentiment...
+[2025-03-04 07:26:53] [INFO] ✅ Fine-tuning completed for nlptown/bert-base-multilingual-uncased-sentiment. Model saved at fine_tuned_models/nlptown_bert-base-multilingual-uncased-sentiment
+[2025-03-04 07:26:53] [INFO] ✅ Evaluation results for nlptown/bert-base-multilingual-uncased-sentiment: {'eval_loss': 0.29704588651657104, 'eval_runtime': 0.0213, 'eval_samples_per_second': 234.691, 'eval_steps_per_second': 46.938, 'epoch': 3.0}
+[2025-03-04 07:26:53] [INFO] 🛠️ Fine-tuning model: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B...
+[2025-03-04 07:27:05] [ERROR] ❌ Training failed for deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B: Cannot handle batch sizes > 1 if no padding token is defined.
+[2025-03-04 07:27:05] [INFO] 🛠️ Fine-tuning model: meta-llama/Llama-3.2-1B...
+[2025-03-04 07:27:13] [ERROR] ❌ Tokenization failed for meta-llama/Llama-3.2-1B: Asking to pad but the tokenizer does not have a padding token. Please select a token to use as `pad_token` `(tokenizer.pad_token = tokenizer.eos_token e.g.)` or add a new pad token via `tokenizer.add_special_tokens({'pad_token': '[PAD]'})`.
+[2025-03-04 07:27:13] [INFO] 🎉 All fine-tuning tasks completed successfully!

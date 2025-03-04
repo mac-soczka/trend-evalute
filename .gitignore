@@ -8,3 +8,4 @@ LLaVA-NeXT
 hf_cache
 fine_tuned_models
 results
+wandb
