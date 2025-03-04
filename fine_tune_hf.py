@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Refactored fine-tuning script for a pretrained model."""
+"""Refactored fine-tuning script for a pretrained model with logging."""
 
+import logging
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
@@ -16,6 +17,15 @@ from transformers import (
 import evaluate
 
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+logger = logging.getLogger(__name__)
+
+
 class FineTuningPipeline:
     def __init__(self, model_name="bert-base-cased", dataset_name="yelp_review_full", num_labels=5):
         self.model_name = model_name
@@ -25,26 +35,32 @@ class FineTuningPipeline:
         self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         self.model = AutoModelForSequenceClassification.from_pretrained(self.model_name, num_labels=self.num_labels)
         self.model.to(self.device)
+        logger.info(f"Initialized model: {self.model_name} on device: {self.device}")
 
     def prepare_data(self, sample_size=1000):
         """Load and preprocess the dataset."""
+        logger.info(f"Loading dataset: {self.dataset_name}")
         dataset = load_dataset(self.dataset_name)
         
         def tokenize_function(examples):
             return self.tokenizer(examples["text"], padding="max_length", truncation=True)
 
+        logger.info("Tokenizing dataset...")
         tokenized_datasets = dataset.map(tokenize_function, batched=True)
         tokenized_datasets = tokenized_datasets.remove_columns(["text"])
         tokenized_datasets = tokenized_datasets.rename_column("label", "labels")
         tokenized_datasets.set_format("torch")
 
+        logger.info(f"Creating smaller datasets with sample size: {sample_size}")
         small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(sample_size))
         small_eval_dataset = tokenized_datasets["test"].shuffle(seed=42).select(range(sample_size))
 
+        logger.info("Data preparation complete.")
         return small_train_dataset, small_eval_dataset
 
     def create_dataloaders(self, train_dataset, eval_dataset, batch_size=8):
         """Create DataLoader objects for training and evaluation."""
+        logger.info(f"Creating DataLoaders with batch size: {batch_size}")
         train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=batch_size)
         eval_dataloader = DataLoader(eval_dataset, batch_size=batch_size)
         return train_dataloader, eval_dataloader
@@ -58,6 +74,7 @@ class FineTuningPipeline:
 
     def train_with_trainer(self, train_dataset, eval_dataset, output_dir="test_trainer", epochs=3):
         """Train the model using Hugging Face Trainer."""
+        logger.info(f"Training with Hugging Face Trainer for {epochs} epochs...")
         training_args = TrainingArguments(
             output_dir=output_dir,
             evaluation_strategy="epoch",
@@ -73,9 +90,11 @@ class FineTuningPipeline:
         )
 
         trainer.train()
+        logger.info("Training with Trainer complete.")
 
     def train_with_pytorch(self, train_dataloader, eval_dataloader, epochs=3, lr=5e-5):
         """Train the model using native PyTorch."""
+        logger.info(f"Training with native PyTorch for {epochs} epochs...")
         optimizer = torch.optim.AdamW(self.model.parameters(), lr=lr)
         num_training_steps = epochs * len(train_dataloader)
         lr_scheduler = get_scheduler(
@@ -89,6 +108,7 @@ class FineTuningPipeline:
         self.model.train()
 
         for epoch in range(epochs):
+            logger.info(f"Epoch {epoch + 1}/{epochs}")
             for batch in train_dataloader:
                 batch = {k: v.to(self.device) for k, v in batch.items()}
                 outputs = self.model(**batch)
@@ -100,8 +120,11 @@ class FineTuningPipeline:
                 optimizer.zero_grad()
                 progress_bar.update(1)
 
+        logger.info("Training with PyTorch complete.")
+
     def evaluate(self, eval_dataloader):
         """Evaluate the model."""
+        logger.info("Evaluating model...")
         metric = evaluate.load("accuracy")
         self.model.eval()
         for batch in eval_dataloader:
@@ -113,7 +136,9 @@ class FineTuningPipeline:
             predictions = torch.argmax(logits, dim=-1)
             metric.add_batch(predictions=predictions, references=batch["labels"])
 
-        return metric.compute()
+        accuracy = metric.compute()
+        logger.info(f"Model accuracy: {accuracy}")
+        return accuracy
 
 
 def main():
@@ -132,7 +157,7 @@ def main():
 
     # Evaluate the model
     accuracy = pipeline.evaluate(eval_dataloader)
-    print(f"Model accuracy: {accuracy}")
+    logger.info(f"Final model accuracy: {accuracy}")
 
 
 if __name__ == "__main__":
