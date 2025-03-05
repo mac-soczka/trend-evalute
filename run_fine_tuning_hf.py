@@ -37,8 +37,8 @@ training_args = TrainingArguments(output_dir="test_trainer", evaluation_strategy
 
 # Set up evaluation metric using the evaluate library
 import numpy as np
-import evaluate
-metric = evaluate.load("accuracy")
+import run_evaluate
+metric = run_evaluate.load("accuracy")
 
 def compute_metrics(eval_pred):
     # Compute accuracy from model logits and labels
@@ -117,8 +117,8 @@ for epoch in range(num_epochs):
         progress_bar.update(1)
 
 # Evaluate the model on the evaluation dataset
-import evaluate
-metric = evaluate.load("accuracy")
+import run_evaluate
+metric = run_evaluate.load("accuracy")
 model.eval()
 for batch in eval_dataloader:
     batch = {k: v.to(device) for k, v in batch.items()}
