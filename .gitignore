@@ -10,3 +10,4 @@ fine_tuned_models
 results
 wandb
 *.pyc
+fine_tune_logs.txt
