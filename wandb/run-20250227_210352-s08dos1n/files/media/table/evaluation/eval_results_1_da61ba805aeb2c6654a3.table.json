@@ -1,1 +1,0 @@
-{"columns": ["Tasks", "Version", "Filter", "num_fewshot", "Metric", "Value", "Stderr"], "data": [["openbookqa", 1.0, "none", 5, "acc", "0.158", "0.0163"], ["openbookqa", 1.0, "none", 5, "acc_norm", "0.258", "0.0196"]]}
