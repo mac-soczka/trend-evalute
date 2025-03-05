@@ -5,7 +5,6 @@ import datetime
 import yaml
 import getpass
 from pathlib import Path
-
 import io
 from PIL import Image
 import numpy as np
@@ -63,9 +62,15 @@ def show_samples(ds, rows, cols):
     samples = ds.shuffle().select(np.arange(rows * cols))
     fig = plt.figure(figsize=(cols * 4, rows * 4))
     for i in range(rows * cols):
-        img_bytes = samples[i]['image']['bytes']
-        img = Image.open(io.BytesIO(img_bytes))
-        label = samples[i]['label']
+        sample = samples[i]
+        img_obj = sample['image']
+        if isinstance(img_obj, dict) and 'bytes' in img_obj:
+            img = Image.open(io.BytesIO(img_obj['bytes']))
+        elif isinstance(img_obj, Image.Image):
+            img = img_obj
+        else:
+            img = Image.fromarray(np.array(img_obj))
+        label = sample['label']
         fig.add_subplot(rows, cols, i + 1)
         plt.imshow(img)
         plt.title(label)
@@ -90,7 +95,7 @@ write_log("Initializing image processor...")
 processor = AutoImageProcessor.from_pretrained('google/vit-base-patch16-224')
 
 def transforms(batch):
-    batch['image'] = [Image.open(io.BytesIO(x['bytes'])).convert('RGB') for x in batch['image']]
+    batch['image'] = [Image.open(io.BytesIO(x['bytes'])).convert('RGB') if isinstance(x, dict) and 'bytes' in x else x.convert('RGB') for x in batch['image']]
     inputs = processor(batch['image'], return_tensors='pt')
     inputs['labels'] = [label2id[y] for y in batch['label']]
     return inputs
@@ -130,7 +135,7 @@ write_log("Setting up training arguments...")
 training_args = TrainingArguments(
     output_dir="./vit-base-oxford-iiit-pets",
     per_device_train_batch_size=16,
-    evaluation_strategy="epoch",
+    eval_strategy="epoch",
     save_strategy="epoch",
     logging_steps=100,
     num_train_epochs=5,
@@ -138,7 +143,7 @@ training_args = TrainingArguments(
     save_total_limit=2,
     remove_unused_columns=False,
     push_to_hub=True,
-    report_to='tensorboard',
+    report_to=[],  # Disable TensorBoard reporting to avoid tensorboard dependency
     load_best_model_at_end=True,
 )
 trainer = Trainer(
@@ -148,7 +153,7 @@ trainer = Trainer(
     compute_metrics=compute_metrics,
     train_dataset=processed_dataset["train"],
     eval_dataset=processed_dataset["validation"],
-    tokenizer=processor
+    processing_class=processor
 )
 
 write_log("Starting training...")
@@ -165,10 +170,16 @@ def show_predictions(rows, cols):
     predictions = trainer.predict(processed_samples).predictions.argmax(axis=1)
     fig = plt.figure(figsize=(cols * 4, rows * 4))
     for i in range(rows * cols):
-        img_bytes = samples[i]['image']['bytes']
-        img = Image.open(io.BytesIO(img_bytes))
+        sample = samples[i]
+        img_obj = sample['image']
+        if isinstance(img_obj, dict) and 'bytes' in img_obj:
+            img = Image.open(io.BytesIO(img_obj['bytes']))
+        elif isinstance(img_obj, Image.Image):
+            img = img_obj
+        else:
+            img = Image.fromarray(np.array(img_obj))
         prediction = predictions[i]
-        label = f"label: {samples[i]['label']}\npredicted: {id2label[prediction]}"
+        label = f"label: {sample['label']}\npredicted: {id2label[prediction]}"
         fig.add_subplot(rows, cols, i + 1)
         plt.imshow(img)
         plt.title(label)

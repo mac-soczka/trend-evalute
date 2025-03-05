@@ -12,3 +12,4 @@ wandb
 *.pyc
 fine_tune_logs.txt
 venv/
+vit-base-oxford-iiit-pets
