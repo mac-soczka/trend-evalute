@@ -7,9 +7,9 @@ tasks:
   - hellaswag
   - mmlu
   - arc_challenge
-  - lambada
-  - winogrande
-  - piqa
+  #- lambada
+  #- winogrande
+  #- piqa
   ##- openbookqa
   ## - gsm8k
   ## - triviaqa
