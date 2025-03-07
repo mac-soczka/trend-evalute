@@ -1,7 +1,10 @@
 models:
-  - nlptown/bert-base-multilingual-uncased-sentiment
-  - deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
-  - meta-llama/Llama-3.2-1B
+  nlptown/bert-base-multilingual-uncased-sentiment:
+    max_length: 512
+  deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B:
+    max_length: 2048
+  meta-llama/Llama-3.2-1B:
+    max_length: 2048
 
 tasks:
   - hellaswag
