@@ -15,6 +15,11 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
     
     model_path = f"fine_tuned_models/{model_name.replace('/', '_')}" if fine_tuned else model_name
     tokenizer = AutoTokenizer.from_pretrained(model_path)
+    
+    # Ensure a padding token is set
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    
     model = AutoModelForSequenceClassification.from_pretrained(model_path).to("cuda" if torch.cuda.is_available() else "cpu")
     dataset = load_dataset("json", data_files=dataset_files)
     
@@ -33,7 +38,14 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
 def fine_tune_model(model_name, dataset_files, output_path, max_length):
     print(f"\nFine-tuning model: {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=5).to("cuda" if torch.cuda.is_available() else "cpu")
+    
+    # Ensure a padding token is set
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+    
+    model = AutoModelForSequenceClassification.from_pretrained(
+        model_name, num_labels=5, ignore_mismatched_sizes=True
+    ).to("cuda" if torch.cuda.is_available() else "cpu")
     
     dataset = load_dataset("json", data_files=dataset_files)
     
