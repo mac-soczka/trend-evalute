@@ -27,13 +27,13 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
         return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=max_length)
     
     tokenized_dataset = dataset.map(tokenize_fn, batched=True)
-    trainer = Trainer(
+    try:
+        trainer = Trainer(
         model=model,
         eval_dataset=tokenized_dataset["validation"],
         tokenizer=tokenizer
-    )
+        )
     
-    try:
         results = trainer.evaluate()
         return results
     except ValueError as e:
@@ -71,18 +71,21 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
         logging_dir=f"{output_path}/logs"
     )
     
-    trainer = Trainer(
+    try:
+        trainer = Trainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_dataset["train"],
         eval_dataset=tokenized_dataset["validation"],
         tokenizer=tokenizer,
         data_collator=None  # Ensure correct padding behavior
-    )
+        )
     
-    trainer.train()
-    trainer.save_model(output_path)
-    print(f"✅ Fine-tuning completed. Model saved at {output_path}")
+        trainer.train()
+        trainer.save_model(output_path)
+        print(f"✅ Fine-tuning completed. Model saved at {output_path}")
+    except Exception as e:
+        print(f"Fine-tuning error for {model_name}: {e}")
 
 def main():
     config = load_config()
