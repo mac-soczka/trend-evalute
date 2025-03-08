@@ -1,0 +1,26 @@
+{
+    "nlptown/bert-base-multilingual-uncased-sentiment": {
+        "baseline": {
+            "eval_loss": 0.3291108310222626,
+            "eval_model_preparation_time": 0.002,
+            "eval_runtime": 0.1255,
+            "eval_samples_per_second": 119.504,
+            "eval_steps_per_second": 15.934
+        },
+        "fine_tuned": {
+            "eval_loss": 0.868315577507019,
+            "eval_model_preparation_time": 0.0,
+            "eval_runtime": 0.0405,
+            "eval_samples_per_second": 370.799,
+            "eval_steps_per_second": 49.44
+        }
+    },
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": {
+        "baseline": null,
+        "fine_tuned": null
+    },
+    "meta-llama/Llama-3.2-1B": {
+        "baseline": null,
+        "fine_tuned": null
+    }
+}

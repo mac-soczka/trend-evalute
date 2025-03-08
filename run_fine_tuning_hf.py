@@ -32,8 +32,13 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
         eval_dataset=tokenized_dataset["validation"],
         tokenizer=tokenizer
     )
-    results = trainer.evaluate()
-    return results
+    
+    try:
+        results = trainer.evaluate()
+        return results
+    except ValueError as e:
+        print(f"Evaluation error for {model_name}: {e}")
+        return None
 
 def fine_tune_model(model_name, dataset_files, output_path, max_length):
     print(f"\nFine-tuning model: {model_name}...")
@@ -50,7 +55,7 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
     dataset = load_dataset("json", data_files=dataset_files)
     
     def tokenize_fn(examples):
-        return tokenizer(examples["text"], truncation=True, padding=True, max_length=max_length)
+        return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=max_length)
     
     tokenized_dataset = dataset.map(tokenize_fn, batched=True)
     
@@ -59,8 +64,8 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
         evaluation_strategy="epoch",
         save_strategy="epoch",
         learning_rate=5e-5,
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=8,
+        per_device_train_batch_size=1,  # Set batch size to 1 to avoid errors
+        per_device_eval_batch_size=1,
         num_train_epochs=3,
         weight_decay=0.01,
         logging_dir=f"{output_path}/logs"
