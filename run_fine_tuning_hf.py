@@ -1,136 +1,96 @@
-# Install required packages
-#!pip install transformers datasets evaluate
-
-###############################################
-# Section 1: Load and Prepare the Dataset
-###############################################
-from datasets import load_dataset
-# Load the Yelp Review Full dataset
-dataset = load_dataset("yelp_review_full")
-# Display a sample review from the training set
-print(dataset["train"][100])
-
-from transformers import AutoTokenizer
-# Initialize the tokenizer for a BERT model
-tokenizer = AutoTokenizer.from_pretrained("bert-base-cased")
-
-def tokenize_function(examples):
-    # Tokenize text data with padding and truncation
-    return tokenizer(examples["text"], padding="max_length", truncation=True)
-
-# Apply tokenization over the entire dataset
-tokenized_datasets = dataset.map(tokenize_function, batched=True)
-# Create small subsets for faster training and evaluation
-small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(1000))
-small_eval_dataset = tokenized_datasets["test"].shuffle(seed=42).select(range(1000))
-
-###############################################
-# Section 2: Fine-Tuning with PyTorch Trainer
-###############################################
-from transformers import AutoModelForSequenceClassification
-# Load a pretrained BERT model with a classification head for 5 classes
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=5)
-
-# Define training hyperparameters and output directory for checkpoints
-from transformers import TrainingArguments
-training_args = TrainingArguments(output_dir="test_trainer", evaluation_strategy="epoch")
-
-# Set up evaluation metric using the evaluate library
-import numpy as np
-import run_evaluate
-metric = run_evaluate.load("accuracy")
-
-def compute_metrics(eval_pred):
-    # Compute accuracy from model logits and labels
-    logits, labels = eval_pred
-    predictions = np.argmax(logits, axis=-1)
-    return metric.compute(predictions=predictions, references=labels)
-
-# Create a Trainer instance for easy fine-tuning
-from transformers import Trainer
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=small_train_dataset,
-    eval_dataset=small_eval_dataset,
-    compute_metrics=compute_metrics,
-)
-
-# Start the training process using Trainer
-trainer.train()
-
-###############################################
-# Section 3: Manual Training Loop in Native PyTorch
-###############################################
-# Clean up memory by deleting previous model and trainer instances
-del model
-del trainer
+import os
 import torch
-torch.cuda.empty_cache()
+import yaml
+import json
+from pathlib import Path
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
+from datasets import load_dataset
 
-# Reload the small datasets (if needed)
-small_train_dataset = tokenized_datasets["train"].shuffle(seed=42).select(range(1000))
-small_eval_dataset = tokenized_datasets["test"].shuffle(seed=42).select(range(1000))
+def load_config(config_file="config.yml"):
+    with open(config_file, "r", encoding="utf-8") as file:
+        return yaml.safe_load(file)
 
-# Create DataLoaders for batching data during training and evaluation
-from torch.utils.data import DataLoader
-train_dataloader = DataLoader(small_train_dataset, shuffle=True, batch_size=8)
-eval_dataloader = DataLoader(small_eval_dataset, batch_size=8)
+def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
+    print(f"\nEvaluating {'fine-tuned' if fine_tuned else 'pretrained'} model: {model_name}...")
+    
+    model_path = f"fine_tuned_models/{model_name.replace('/', '_')}" if fine_tuned else model_name
+    tokenizer = AutoTokenizer.from_pretrained(model_path)
+    model = AutoModelForSequenceClassification.from_pretrained(model_path).to("cuda" if torch.cuda.is_available() else "cpu")
+    dataset = load_dataset("json", data_files=dataset_files)
+    
+    def tokenize_fn(examples):
+        return tokenizer(examples["text"], truncation=True, padding=True, max_length=max_length)
+    
+    tokenized_dataset = dataset.map(tokenize_fn, batched=True)
+    trainer = Trainer(
+        model=model,
+        eval_dataset=tokenized_dataset["validation"],
+        tokenizer=tokenizer
+    )
+    results = trainer.evaluate()
+    return results
 
-# Reload the model for manual training
-from transformers import AutoModelForSequenceClassification
-model = AutoModelForSequenceClassification.from_pretrained("bert-base-cased", num_labels=5)
+def fine_tune_model(model_name, dataset_files, output_path, max_length):
+    print(f"\nFine-tuning model: {model_name}...")
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2).to("cuda" if torch.cuda.is_available() else "cpu")
+    
+    dataset = load_dataset("json", data_files=dataset_files)
+    
+    def tokenize_fn(examples):
+        return tokenizer(examples["text"], truncation=True, padding=True, max_length=max_length)
+    
+    tokenized_dataset = dataset.map(tokenize_fn, batched=True)
+    
+    training_args = TrainingArguments(
+        output_dir=output_path,
+        evaluation_strategy="epoch",
+        save_strategy="epoch",
+        learning_rate=5e-5,
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=8,
+        num_train_epochs=3,
+        weight_decay=0.01,
+        logging_dir=f"{output_path}/logs"
+    )
+    
+    trainer = Trainer(
+        model=model,
+        args=training_args,
+        train_dataset=tokenized_dataset["train"],
+        eval_dataset=tokenized_dataset["validation"],
+        tokenizer=tokenizer
+    )
+    
+    trainer.train()
+    trainer.save_model(output_path)
+    print(f"✅ Fine-tuning completed. Model saved at {output_path}")
 
-# Set up the optimizer
-from torch.optim import AdamW
-optimizer = AdamW(model.parameters(), lr=5e-5)
+def main():
+    config = load_config()
+    dataset_files = {"train": "data/train.json", "validation": "data/valid.json"}
+    
+    results = {}
+    for model_name, model_config in config["models"].items():
+        max_length = model_config["max_length"]
+        
+        # Step 1: Baseline Evaluation
+        results[model_name] = {}
+        results[model_name]["baseline"] = evaluate_model(model_name, dataset_files, max_length)
+        
+        # Step 2: Fine-Tuning
+        output_path = f"fine_tuned_models/{model_name.replace('/', '_')}"
+        Path(output_path).mkdir(parents=True, exist_ok=True)
+        fine_tune_model(model_name, dataset_files, output_path, max_length)
+        
+        # Step 3: Post Fine-Tuning Evaluation
+        results[model_name]["fine_tuned"] = evaluate_model(model_name, dataset_files, max_length, fine_tuned=True)
+    
+    # Save results to JSON
+    with open("evaluation_results.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=4)
+    
+    print("\n🎉 All fine-tuning tasks completed successfully! Evaluation results saved to 'evaluation_results.json'.")
 
-# Define a learning rate scheduler based on the number of training steps
-from transformers import get_scheduler
-num_epochs = 3
-num_training_steps = num_epochs * len(train_dataloader)
-lr_scheduler = get_scheduler(
-    name="linear", optimizer=optimizer, num_warmup_steps=0, num_training_steps=num_training_steps
-)
-
-# Select the device (GPU if available, otherwise CPU) and move the model
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-model.to(device)
-
-# Training loop with progress bar using tqdm
-from tqdm.auto import tqdm
-progress_bar = tqdm(range(num_training_steps))
-model.train()
-for epoch in range(num_epochs):
-    for batch in train_dataloader:
-        # Move batch to the selected device
-        batch = {k: v.to(device) for k, v in batch.items()}
-        # Forward pass
-        outputs = model(**batch)
-        loss = outputs.loss
-        # Backpropagation
-        loss.backward()
-        # Optimizer and scheduler steps
-        optimizer.step()
-        lr_scheduler.step()
-        optimizer.zero_grad()
-        progress_bar.update(1)
-
-# Evaluate the model on the evaluation dataset
-import run_evaluate
-metric = run_evaluate.load("accuracy")
-model.eval()
-for batch in eval_dataloader:
-    batch = {k: v.to(device) for k, v in batch.items()}
-    with torch.no_grad():
-        outputs = model(**batch)
-    logits = outputs.logits
-    predictions = torch.argmax(logits, dim=-1)
-    metric.add_batch(predictions=predictions, references=batch["labels"])
-# Print the final evaluation accuracy
-print("Final evaluation metrics:", metric.compute())
-
-# Save the manually fine-tuned model to a directory
-model_save_path = "manual_finetuned_model"
-model.save_pretrained(model_save_path)
-print(f"Model saved at: {model_save_path}")
+if __name__ == "__main__":
+    main()
