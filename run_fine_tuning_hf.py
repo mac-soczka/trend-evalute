@@ -24,7 +24,7 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
     dataset = load_dataset("json", data_files=dataset_files)
     
     def tokenize_fn(examples):
-        return tokenizer(examples["text"], truncation=True, padding=True, max_length=max_length)
+        return tokenizer(examples["text"], truncation=True, padding="max_length", max_length=max_length)
     
     tokenized_dataset = dataset.map(tokenize_fn, batched=True)
     trainer = Trainer(
@@ -61,7 +61,7 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
     
     training_args = TrainingArguments(
         output_dir=output_path,
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",  # Updated deprecated parameter
         save_strategy="epoch",
         learning_rate=5e-5,
         per_device_train_batch_size=1,  # Set batch size to 1 to avoid errors
@@ -76,7 +76,8 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
         args=training_args,
         train_dataset=tokenized_dataset["train"],
         eval_dataset=tokenized_dataset["validation"],
-        tokenizer=tokenizer
+        tokenizer=tokenizer,
+        data_collator=None  # Ensure correct padding behavior
     )
     
     trainer.train()
