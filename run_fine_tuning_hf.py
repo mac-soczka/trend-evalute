@@ -33,7 +33,7 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
 def fine_tune_model(model_name, dataset_files, output_path, max_length):
     print(f"\nFine-tuning model: {model_name}...")
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=2).to("cuda" if torch.cuda.is_available() else "cpu")
+    model = AutoModelForSequenceClassification.from_pretrained(model_name, num_labels=5).to("cuda" if torch.cuda.is_available() else "cpu")
     
     dataset = load_dataset("json", data_files=dataset_files)
     
@@ -68,7 +68,7 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
 
 def main():
     config = load_config()
-    dataset_files = {"train": "data/train.json", "validation": "data/valid.json"}
+    dataset_files = {"train": "data/example_train.json", "validation": "data/example_valid.json"}
     
     results = {}
     for model_name, model_config in config["models"].items():
