@@ -2,6 +2,7 @@ import os
 import torch
 import yaml
 import json
+from transformers.integrations import WandbCallback
 from pathlib import Path
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, Trainer, TrainingArguments
 from datasets import load_dataset
@@ -29,11 +30,11 @@ def evaluate_model(model_name, dataset_files, max_length, fine_tuned=False):
     tokenized_dataset = dataset.map(tokenize_fn, batched=True)
     try:
         trainer = Trainer(
-        model=model,
-        eval_dataset=tokenized_dataset["validation"],
-        tokenizer=tokenizer
+            callbacks=[WandbCallback()],
+            model=model,
+            eval_dataset=tokenized_dataset["validation"],
+            tokenizer=tokenizer
         )
-    
         results = trainer.evaluate()
         return results
     except ValueError as e:
@@ -61,31 +62,36 @@ def fine_tune_model(model_name, dataset_files, output_path, max_length):
     
     training_args = TrainingArguments(
         output_dir=output_path,
-        eval_strategy="epoch",  # Updated deprecated parameter
+        eval_strategy="epoch",
         save_strategy="epoch",
         learning_rate=5e-5,
-        per_device_train_batch_size=1,  # Set batch size to 1 to avoid errors
+        per_device_train_batch_size=1,
         per_device_eval_batch_size=1,
         num_train_epochs=3,
         weight_decay=0.01,
-        logging_dir=f"{output_path}/logs"
+        logging_dir=f"{output_path}/logs",
+        report_to=["wandb"],  # Ensure Weights & Biases is used
+        run_name=f"{model_name}_fine_tune"
     )
+    
+    
     
     try:
         trainer = Trainer(
-        model=model,
-        args=training_args,
-        train_dataset=tokenized_dataset["train"],
-        eval_dataset=tokenized_dataset["validation"],
-        tokenizer=tokenizer,
-        data_collator=None  # Ensure correct padding behavior
+            callbacks=[WandbCallback()],
+            model=model,
+            args=training_args,
+            train_dataset=tokenized_dataset["train"],
+            eval_dataset=tokenized_dataset["validation"],
+            tokenizer=tokenizer,
+            data_collator=None
         )
-    
         trainer.train()
         trainer.save_model(output_path)
         print(f"✅ Fine-tuning completed. Model saved at {output_path}")
     except Exception as e:
         print(f"Fine-tuning error for {model_name}: {e}")
+        
 
 def main():
     config = load_config()
