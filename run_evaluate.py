@@ -7,9 +7,9 @@ import yaml
 import getpass
 from pathlib import Path
 from huggingface_hub import login
+from transformers import AutoTokenizer
 
 log_file = "eval_log.txt"
-error_file = "eval_error.txt"
 results_dir = "results"
 
 def write_log(message, log_type="INFO"):
@@ -19,6 +19,22 @@ def write_log(message, log_type="INFO"):
     print(formatted_message)
     with open(log_file, "a", encoding="utf-8") as log:
         log.write(formatted_message + "\n")
+
+def get_effective_max_length(model_name, config_max, hf_cache):
+    """Get safe max length considering both config and model limitations"""
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            cache_dir=hf_cache,
+            trust_remote_code=True
+        )
+        model_max = tokenizer.model_max_length
+        if model_max > 1000000:
+            model_max = 4096 if "llama" in model_name.lower() else 512
+        return min(config_max, model_max)
+    except Exception as e:
+        write_log(f"⚠️ Failed to get max length for {model_name}: {e}, using safe default", "WARNING")
+        return min(config_max, 512)
 
 # Load Configuration
 config_file = "config.yml"
@@ -33,87 +49,80 @@ models = config.get("models", {})
 tasks = config.get("tasks", [])
 HF_CACHE_DIR = config.get("hf_cache_dir", None)
 
-# Ensure cache directory is properly set
+# Configure environment
+os.environ["PYTHONUTF8"] = "1"
 if HF_CACHE_DIR:
+    os.makedirs(HF_CACHE_DIR, exist_ok=True)
     os.environ["HF_HOME"] = HF_CACHE_DIR
     os.environ["HF_DATASETS_CACHE"] = os.path.join(HF_CACHE_DIR, "datasets")
-    if not os.path.exists(HF_CACHE_DIR):
-        write_log(f"HF cache directory '{HF_CACHE_DIR}' does not exist. Creating it.", "WARNING")
-        os.makedirs(HF_CACHE_DIR, exist_ok=True)
 
-os.environ["PYTHONUTF8"] = "1"
-
-# Authenticate with Hugging Face Hub
+# Authentication
 hf_token = os.getenv("HF_TOKEN") or getpass.getpass("Enter Hugging Face Token: ")
 if not hf_token:
     write_log("Hugging Face Token not provided!", "ERROR")
     sys.exit(1)
-
 login(token=hf_token)
 
-# Set Device
+# Device configuration
 device = "cuda" if torch.cuda.is_available() else "cpu"
-write_log(f"Using device: {device}")
+batch_size = 4 if device == "cuda" else 1
+write_log(f"Using device: {device} with batch size: {batch_size}")
 
-# Evaluate Each Model
+# Evaluation pipeline
 for model_name, model_props in models.items():
-    # Get max length and ensure it's within model constraints
-    default_max_length = 512  # Safe fallback if unknown
-    model_max_length = model_props.get("max_length", default_max_length)
-    model_max_length = min(model_max_length, 2048)  # Avoid overflows in long-context models
-
-    base_model_args = (
-        f"pretrained={model_name},max_length={model_max_length},truncation='only_first'"
-    )
-
+    config_max = model_props.get("max_length", 512)
+    effective_max = get_effective_max_length(model_name, config_max, HF_CACHE_DIR)
+    
+    model_args = [
+        f"pretrained={model_name}",
+        f"max_length={effective_max}",
+        "truncation=only_first",
+        "trust_remote_code=True"
+    ]
+    
     if HF_CACHE_DIR:
-        base_model_args += f",cache_dir={HF_CACHE_DIR}"
+        model_args.append(f"cache_dir={HF_CACHE_DIR}")
 
     lm_eval_args = [
         sys.executable, "-m", "lm_eval",
         "--model", "huggingface",
-        "--model_args", base_model_args,
+        "--model_args", ",".join(model_args),
         "--tasks", ",".join(tasks),
         "--num_fewshot", "5",
-        "--batch_size", "4",
         "--device", device,
         "--output_path", results_dir,
         "--log_samples"
     ]
 
-    write_log(f"Running lm-eval for model {model_name} with max_length={model_max_length}...")
+    write_log(f"🚀 Starting evaluation for {model_name} (max_length={effective_max})...")
     
     try:
-        subprocess.run(lm_eval_args, check=True, stdout=sys.stdout, stderr=sys.stderr)
-        write_log(f"✅ Evaluation for {model_name} completed successfully.", "SUCCESS")
+        subprocess.run(
+            lm_eval_args,
+            check=True,
+            stdout=sys.stdout,
+            stderr=sys.stderr,
+            timeout=3600  # 1 hour timeout per model
+        )
+        write_log(f"✅ Successfully evaluated {model_name}", "SUCCESS")
     except subprocess.CalledProcessError as e:
-        write_log(f"❌ lm-eval failed for {model_name}: {e}", "ERROR")
-        sys.exit(1)
+        write_log(f"❌ Evaluation failed for {model_name}: {e}", "ERROR")
+    except subprocess.TimeoutExpired:
+        write_log(f"⏰ Timeout exceeded for {model_name}", "WARNING")
 
-# Run Zeno Visualization if Enabled
+# Zeno visualization
 zeno_config = config.get("zeno", {})
 if zeno_config.get("enabled", False):
     zeno_script_path = Path("lm-evaluation-harness/scripts/zeno_visualize.py")
-    if not zeno_script_path.exists():
-        write_log(f"⚠️ Zeno visualization script not found: {zeno_script_path}", "ERROR")
-        sys.exit(1)
+    if zeno_script_path.exists():
+        zeno_args = [
+            sys.executable, str(zeno_script_path),
+            "--data_path", results_dir,
+            "--project_name", zeno_config.get("project_name", "Zeno Visualization")
+        ]
+        write_log("📊 Generating Zeno visualization...")
+        subprocess.run(zeno_args, check=True)
+    else:
+        write_log("⚠️ Zeno visualization script not found", "WARNING")
 
-    if not Path(results_dir).exists():
-        write_log(f"⚠️ Results directory not found: {results_dir}", "ERROR")
-        sys.exit(1)
-
-    zeno_args = [
-        sys.executable, str(zeno_script_path),
-        "--data_path", str(results_dir),
-        "--project_name", zeno_config.get("project_name", "Zeno Visualization")
-    ]
-
-    write_log(f"📊 Running Zeno Visualization for results in {results_dir}")
-    
-    try:
-        subprocess.run(zeno_args, check=True, stdout=sys.stdout, stderr=sys.stderr)
-        write_log("✅ Zeno visualization completed successfully!", "SUCCESS")
-    except subprocess.CalledProcessError as e:
-        write_log(f"❌ Zeno visualization failed: {e}", "ERROR")
-
-write_log("🎉 All evaluation tasks completed successfully!")
+write_log("🎉 All tasks completed!", "SUCCESS")
