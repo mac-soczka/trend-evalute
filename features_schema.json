@@ -1,0 +1,292 @@
+[
+  {
+    "name": "avg_sentiment_score",
+    "description": "Mean polarity score across comments",
+    "category": "Sentiment"
+  },
+  {
+    "name": "positive_comment_ratio",
+    "description": "Percentage of comments classified as positive",
+    "category": "Sentiment"
+  },
+  {
+    "name": "negative_comment_ratio",
+    "description": "Percentage of comments classified as negative",
+    "category": "Sentiment"
+  },
+  {
+    "name": "neutral_comment_ratio",
+    "description": "Percentage of comments classified as neutral",
+    "category": "Sentiment"
+  },
+  {
+    "name": "sentiment_std_dev",
+    "description": "Standard deviation of sentiment scores",
+    "category": "Sentiment"
+  },
+  {
+    "name": "comment_sentiment_entropy",
+    "description": "Diversity or uncertainty in sentiment distribution",
+    "category": "Sentiment"
+  },
+  {
+    "name": "view_count",
+    "description": "Total number of views",
+    "category": "Engagement"
+  },
+  {
+    "name": "like_count",
+    "description": "Total number of likes",
+    "category": "Engagement"
+  },
+  {
+    "name": "dislike_count",
+    "description": "Total number of dislikes",
+    "category": "Engagement"
+  },
+  {
+    "name": "like_ratio",
+    "description": "Likes divided by views",
+    "category": "Engagement"
+  },
+  {
+    "name": "comment_count",
+    "description": "Total number of comments",
+    "category": "Engagement"
+  },
+  {
+    "name": "engagement_rate",
+    "description": "Sum of likes and comments divided by views",
+    "category": "Engagement"
+  },
+  {
+    "name": "days_since_upload",
+    "description": "Number of days since the video was uploaded",
+    "category": "Engagement"
+  },
+  {
+    "name": "views_per_day",
+    "description": "Average number of views per day",
+    "category": "Engagement"
+  },
+  {
+    "name": "like_dislike_ratio",
+    "description": "Likes divided by dislikes",
+    "category": "Engagement"
+  },
+  {
+    "name": "title_length",
+    "description": "Number of characters in the video title",
+    "category": "Engagement"
+  },
+  {
+    "name": "description_length",
+    "description": "Number of characters in the video description",
+    "category": "Engagement"
+  },
+  {
+    "name": "title_sentiment",
+    "description": "Sentiment polarity of the title",
+    "category": "Text"
+  },
+  {
+    "name": "description_sentiment",
+    "description": "Sentiment polarity of the description",
+    "category": "Text"
+  },
+  {
+    "name": "has_clickbait_keywords",
+    "description": "Binary indicator for clickbait keywords in title/description",
+    "category": "Text"
+  },
+  {
+    "name": "num_hashtags",
+    "description": "Number of hashtags in the description",
+    "category": "Text"
+  },
+  {
+    "name": "num_exclamations",
+    "description": "Number of exclamation marks in title/description",
+    "category": "Text"
+  },
+  {
+    "name": "num_questions",
+    "description": "Number of question marks in title/description",
+    "category": "Text"
+  },
+  {
+    "name": "upload_day_of_week",
+    "description": "Day of the week the video was uploaded",
+    "category": "Time"
+  },
+  {
+    "name": "upload_hour",
+    "description": "Hour of the day the video was uploaded",
+    "category": "Time"
+  },
+  {
+    "name": "is_weekend_upload",
+    "description": "Boolean indicating if the video was uploaded on a weekend",
+    "category": "Time"
+  },
+  {
+    "name": "is_holiday_period",
+    "description": "Boolean indicating if the video was uploaded during a holiday",
+    "category": "Time"
+  },
+  {
+    "name": "avg_comment_length",
+    "description": "Average length of the comments",
+    "category": "Comments"
+  },
+  {
+    "name": "reply_count",
+    "description": "Number of replies to comments",
+    "category": "Comments"
+  },
+  {
+    "name": "toxicity_score_avg",
+    "description": "Average toxicity score across comments",
+    "category": "Comments"
+  },
+  {
+    "name": "comment_keyword_frequency_amazing",
+    "description": "Frequency of 'amazing' in comments",
+    "category": "Comments"
+  },
+  {
+    "name": "comment_keyword_frequency_boring",
+    "description": "Frequency of 'boring' in comments",
+    "category": "Comments"
+  },
+  {
+    "name": "comment_keyword_frequency_excited",
+    "description": "Frequency of 'excited' in comments",
+    "category": "Comments"
+  },
+  {
+    "name": "comment_keyword_frequency_bad",
+    "description": "Frequency of 'bad' in comments",
+    "category": "Comments"
+  },
+  {
+    "name": "top_influencer_mentions",
+    "description": "Number of influencer mentions in comments",
+    "category": "Comments"
+  },
+  {
+    "name": "num_known_actors",
+    "description": "Number of well-known actors in the video",
+    "category": "Content"
+  },
+  {
+    "name": "has_celebrity_actor",
+    "description": "Boolean indicating presence of a celebrity",
+    "category": "Content"
+  },
+  {
+    "name": "genre",
+    "description": "Genre of the video",
+    "category": "Content"
+  },
+  {
+    "name": "budget_estimate",
+    "description": "Estimated budget level (low/medium/high)",
+    "category": "Content"
+  },
+  {
+    "name": "trailer_length",
+    "description": "Duration of the video in seconds",
+    "category": "Content"
+  },
+  {
+    "name": "avg_volume_db",
+    "description": "Average loudness of the audio",
+    "category": "Audio"
+  },
+  {
+    "name": "max_volume_db",
+    "description": "Maximum loudness in the audio",
+    "category": "Audio"
+  },
+  {
+    "name": "dynamic_range_db",
+    "description": "Difference between the loudest and softest parts",
+    "category": "Audio"
+  },
+  {
+    "name": "volume_std_dev",
+    "description": "Standard deviation of volume",
+    "category": "Audio"
+  },
+  {
+    "name": "avg_tempo_bpm",
+    "description": "Average beats per minute (tempo)",
+    "category": "Audio"
+  },
+  {
+    "name": "tempo_std_dev",
+    "description": "Tempo variability",
+    "category": "Audio"
+  },
+  {
+    "name": "num_tempo_changes",
+    "description": "Number of tempo shifts",
+    "category": "Audio"
+  },
+  {
+    "name": "avg_pitch_hz",
+    "description": "Average pitch frequency",
+    "category": "Audio"
+  },
+  {
+    "name": "pitch_std_dev",
+    "description": "Pitch variation",
+    "category": "Audio"
+  },
+  {
+    "name": "dominant_pitch_class",
+    "description": "Most dominant pitch class",
+    "category": "Audio"
+  },
+  {
+    "name": "speech_ratio",
+    "description": "Ratio of speech in the audio",
+    "category": "Audio"
+  },
+  {
+    "name": "num_speakers_estimated",
+    "description": "Estimated number of speakers",
+    "category": "Audio"
+  },
+  {
+    "name": "avg_speech_speed_wpm",
+    "description": "Average speech speed in words per minute",
+    "category": "Audio"
+  },
+  {
+    "name": "voice_emotion_score",
+    "description": "Emotion score inferred from voice",
+    "category": "Audio"
+  },
+  {
+    "name": "background_noise_level_db",
+    "description": "Estimated background noise level",
+    "category": "Audio"
+  },
+  {
+    "name": "clarity_score",
+    "description": "Speech clarity score",
+    "category": "Audio"
+  },
+  {
+    "name": "has_soundtrack",
+    "description": "Boolean indicating presence of background music",
+    "category": "Audio"
+  },
+  {
+    "name": "music_mood_score",
+    "description": "Estimated mood score of background music",
+    "category": "Audio"
+  }
+]
