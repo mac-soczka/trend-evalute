@@ -1,24 +1,19 @@
 import os
 import json
 import pandas as pd
-import logging
-from pycaret.regression import setup, compare_models, finalize_model, predict_model, save_model
-
-# Configure basic logging to a file
-log_file_name = "pycaret_training.log"
-logging.basicConfig(
-    filename=log_file_name,
-    filemode='w',
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    level=logging.INFO
+from pycaret.regression import (
+    setup,
+    create_model,
+    finalize_model,
+    predict_model,
+    save_model,
+    plot_model
 )
-logger = logging.getLogger()
-logger.info("Logging started for PyCaret training pipeline")
 
 def load_data(data_folder='data/raw'):
     data = []
     for file_name in os.listdir(data_folder):
-        print(file_name)
+        print(f"Loading {file_name}")
         if file_name.endswith(".json"):
             file_path = os.path.join(data_folder, file_name)
             with open(file_path, 'r') as f:
@@ -37,17 +32,44 @@ def setup_pycaret(data: pd.DataFrame, target: str):
         target=target,
         session_id=123,
         use_gpu=True,
-        log_experiment=False  # disable MLflow logging to avoid crash
+        log_experiment=False,
+        html=True
     )
+
+def generate_visuals(model):
+    os.makedirs("charts", exist_ok=True)
+
+    plot_model(model, plot='residuals', save=True)
+    plot_model(model, plot='error', save=True)
+    plot_model(model, plot='feature', save=True)
+    plot_model(model, plot='learning', save=True)
+    plot_model(model, plot='rfe', save=True)
+    plot_model(model, plot='cooks', save=True)
+    plot_model(model, plot='manifold', save=True)
+    plot_model(model, plot='vc', save=True)
+
+    for file in os.listdir():
+        if file.endswith(".png"):
+            os.replace(file, os.path.join("charts", file))
 
 def train_model():
     data = load_data()
     target = 'views_per_day'
     setup_pycaret(data, target)
-    best_model = compare_models()
-    final_model = finalize_model(best_model)
+
+    model = create_model(
+        'lightgbm',
+        verbose=False,
+        gpu_use_dp=True,
+        device='gpu'
+    )
+
+    final_model = finalize_model(model)
     predictions = predict_model(final_model)
+
     save_model(final_model, 'final_model')
+    generate_visuals(final_model)
+
     return predictions
 
 if __name__ == "__main__":
