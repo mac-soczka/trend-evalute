@@ -124,18 +124,18 @@ model = ViTForImageClassification.from_pretrained(
     label2id=label2id,
     ignore_mismatched_sizes=True
 )
-for name, p in model.named_parameters():
-    if not name.startswith('classifier'):
-        p.requires_grad = False
-num_params = sum([p.numel() for p in model.parameters()])
-trainable_params = sum([p.numel() for p in model.parameters() if p.requires_grad])
+for name, param in model.named_parameters():
+    if 'classifier' not in name:
+        param.requires_grad = False
+num_params = sum(p.numel() for p in model.parameters())
+trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
 write_log(f"Model parameters: {num_params:,} total, {trainable_params:,} trainable.")
 
 write_log("Setting up training arguments...")
 training_args = TrainingArguments(
     output_dir="./vit-base-oxford-iiit-pets",
     per_device_train_batch_size=16,
-    eval_strategy="epoch",
+    evaluation_strategy="epoch",
     save_strategy="epoch",
     logging_steps=100,
     num_train_epochs=5,
@@ -143,7 +143,7 @@ training_args = TrainingArguments(
     save_total_limit=2,
     remove_unused_columns=False,
     push_to_hub=True,
-    report_to=[],  # Disable TensorBoard reporting to avoid tensorboard dependency
+    report_to=[],
     load_best_model_at_end=True,
 )
 trainer = Trainer(
@@ -153,7 +153,7 @@ trainer = Trainer(
     compute_metrics=compute_metrics,
     train_dataset=processed_dataset["train"],
     eval_dataset=processed_dataset["validation"],
-    processing_class=processor
+    tokenizer=processor
 )
 
 write_log("Starting training...")
