@@ -63,7 +63,9 @@ def setup_experiment(df):
             "genre", "budget_estimate", "dominant_pitch_class", "upload_day_of_week"
         ],
         verbose=False,
-        log_experiment=False
+        log_experiment=True,
+        experiment_name="trend-eval-lgbm",
+        log_plots=True
     )
 
 def tune_lgbm():
