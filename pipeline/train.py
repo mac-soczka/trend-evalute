@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from pycaret.regression import (
     setup,
-    compare_models,
     create_model,
     tune_model,
     finalize_model,
@@ -16,7 +15,6 @@ from pycaret.regression import (
     pull
 )
 
-# Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 def load_data(data_folder='data/raw'):
@@ -37,6 +35,11 @@ def load_data(data_folder='data/raw'):
         raise ValueError("Data is empty or malformed.")
     if 'views_per_day' not in df.columns:
         raise KeyError("Target column 'views_per_day' missing.")
+
+    # Handle infinite or negative values, clip if needed
+    df = df[df["views_per_day"] > 0]  # Yeo-Johnson needs positive data if applied
+    df["views_per_day"] = df["views_per_day"].clip(upper=df["views_per_day"].quantile(0.99))  # optional
+
     return df
 
 def setup_experiment(df):
@@ -50,13 +53,12 @@ def setup_experiment(df):
         use_gpu=True,
         normalize=True,
         transformation=True,
-        transform_target=True,
-        polynomial_features=False,
+        transform_target=False,  # DISABLED to prevent crash
+        ignore_features=["id"],
         remove_multicollinearity=True,
         multicollinearity_threshold=0.85,
         feature_selection=True,
         low_variance_threshold=0.01,
-        ignore_features=[],
         categorical_features=[
             "genre", "budget_estimate", "dominant_pitch_class", "upload_day_of_week"
         ],
@@ -77,17 +79,15 @@ def tune_lgbm():
 
 def generate_advanced_charts(model, predictions):
     os.makedirs("charts", exist_ok=True)
-    charts = ['residuals', 'error', 'feature', 'learning', 'vc', 'cooks']
-    for chart in charts:
+    for plot in ['residuals', 'error', 'feature', 'learning', 'vc', 'cooks']:
         try:
-            plot_model(model, plot=chart, save=True)
+            plot_model(model, plot=plot, save=True)
         except Exception as e:
-            logging.warning(f"Could not plot {chart}: {e}")
-    for file in os.listdir():
-        if file.endswith(".png"):
-            os.replace(file, os.path.join("charts", file))
+            logging.warning(f"Failed to plot {plot}: {e}")
+    for f in os.listdir():
+        if f.endswith(".png"):
+            os.replace(f, os.path.join("charts", f))
 
-    # Custom seaborn-based diagnostics
     try:
         residuals = predictions["Label"] - predictions["prediction_label"]
         plt.figure(figsize=(10, 6))
@@ -103,6 +103,7 @@ def generate_advanced_charts(model, predictions):
         plt.title("Actual vs Predicted")
         plt.savefig("charts/custom_actual_vs_predicted.png")
         plt.close()
+
     except Exception as e:
         logging.warning(f"Custom plots failed: {e}")
 
