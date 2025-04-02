@@ -43,14 +43,15 @@ def train():
     predict_model(final_model)
     save_model(final_model, 'lgbm_model')
 
-    # Save all key charts
-    os.makedirs("charts", exist_ok=True)
+    # Save all key charts into a special directory
+    charts_dir = os.path.join("charts", "pycaret_charts")
+    os.makedirs(charts_dir, exist_ok=True)
     for chart in ['residuals', 'error', 'feature', 'learning', 'vc', 'cooks']:
         try:
             plot_model(final_model, plot=chart, save=True)
-            os.replace(f'{chart}.png', os.path.join('charts', f'{chart}.png'))
-        except:
-            pass
+            os.replace(f'{chart}.png', os.path.join(charts_dir, f'{chart}.png'))
+        except Exception as e:
+            print(f"Failed to generate {chart}: {e}")
 
 if __name__ == "__main__":
     train()
