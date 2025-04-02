@@ -1,77 +1,122 @@
 import os
 import json
+import logging
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from pycaret.regression import (
     setup,
+    compare_models,
     create_model,
+    tune_model,
     finalize_model,
     predict_model,
     save_model,
-    plot_model
+    plot_model,
+    pull
 )
 
-def load_data(data_folder='data/raw'):
-    data = []
-    for file_name in os.listdir(data_folder):
-        print(f"Loading {file_name}")
-        if file_name.endswith(".json"):
-            file_path = os.path.join(data_folder, file_name)
-            with open(file_path, 'r') as f:
-                file_data = json.load(f)
-                if isinstance(file_data, list):
-                    data.extend(file_data)
-                elif isinstance(file_data, dict) and "features" in file_data:
-                    data.extend(file_data["features"])
-                else:
-                    print(f"Skipping {file_name}: unexpected structure")
-    return pd.DataFrame(data)
+# Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
-def setup_pycaret(data: pd.DataFrame, target: str):
-    setup(
-        data=data,
-        target=target,
-        session_id=123,
+def load_data(data_folder='data/raw'):
+    records = []
+    for file in os.listdir(data_folder):
+        if file.endswith('.json'):
+            try:
+                with open(os.path.join(data_folder, file)) as f:
+                    raw = json.load(f)
+                    if isinstance(raw, list):
+                        records.extend(raw)
+                    elif isinstance(raw, dict) and "features" in raw:
+                        records.extend(raw["features"])
+            except Exception as e:
+                logging.warning(f"Skipping {file}: {e}")
+    df = pd.DataFrame(records)
+    if df.empty:
+        raise ValueError("Data is empty or malformed.")
+    if 'views_per_day' not in df.columns:
+        raise KeyError("Target column 'views_per_day' missing.")
+    return df
+
+def setup_experiment(df):
+    return setup(
+        data=df,
+        target="views_per_day",
+        session_id=42,
+        train_size=0.85,
+        fold_strategy="kfold",
+        fold=5,
         use_gpu=True,
-        log_experiment=False,
-        html=True
+        normalize=True,
+        transformation=True,
+        transform_target=True,
+        polynomial_features=False,
+        remove_multicollinearity=True,
+        multicollinearity_threshold=0.85,
+        feature_selection=True,
+        low_variance_threshold=0.01,
+        ignore_features=[],
+        categorical_features=[
+            "genre", "budget_estimate", "dominant_pitch_class", "upload_day_of_week"
+        ],
+        verbose=False,
+        log_experiment=False
     )
 
-def generate_visuals(model):
+def tune_lgbm():
+    model = create_model('lightgbm', verbose=False)
+    tuned = tune_model(
+        model,
+        optimize="R2",
+        choose_better=True,
+        search_library="scikit-optimize",
+        n_iter=40
+    )
+    return finalize_model(tuned)
+
+def generate_advanced_charts(model, predictions):
     os.makedirs("charts", exist_ok=True)
-
-    plot_model(model, plot='residuals', save=True)
-    plot_model(model, plot='error', save=True)
-    plot_model(model, plot='feature', save=True)
-    plot_model(model, plot='learning', save=True)
-    plot_model(model, plot='rfe', save=True)
-    plot_model(model, plot='cooks', save=True)
-    plot_model(model, plot='manifold', save=True)
-    plot_model(model, plot='vc', save=True)
-
+    charts = ['residuals', 'error', 'feature', 'learning', 'vc', 'cooks']
+    for chart in charts:
+        try:
+            plot_model(model, plot=chart, save=True)
+        except Exception as e:
+            logging.warning(f"Could not plot {chart}: {e}")
     for file in os.listdir():
         if file.endswith(".png"):
             os.replace(file, os.path.join("charts", file))
 
-def train_model():
-    data = load_data()
-    target = 'views_per_day'
-    setup_pycaret(data, target)
+    # Custom seaborn-based diagnostics
+    try:
+        residuals = predictions["Label"] - predictions["prediction_label"]
+        plt.figure(figsize=(10, 6))
+        sns.histplot(residuals, kde=True)
+        plt.title("Residuals Distribution")
+        plt.savefig("charts/custom_residuals_distribution.png")
+        plt.close()
 
-    model = create_model(
-        'lightgbm',
-        verbose=False,
-        gpu_use_dp=True,
-        device='gpu'
-    )
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=predictions["Label"], y=predictions["prediction_label"])
+        plt.plot([predictions["Label"].min(), predictions["Label"].max()],
+                 [predictions["Label"].min(), predictions["Label"].max()], 'r--')
+        plt.title("Actual vs Predicted")
+        plt.savefig("charts/custom_actual_vs_predicted.png")
+        plt.close()
+    except Exception as e:
+        logging.warning(f"Custom plots failed: {e}")
 
-    final_model = finalize_model(model)
-    predictions = predict_model(final_model)
-
-    save_model(final_model, 'final_model')
-    generate_visuals(final_model)
-
-    return predictions
+def train():
+    df = load_data()
+    setup_experiment(df)
+    model = tune_lgbm()
+    predictions = predict_model(model)
+    save_model(model, 'world_class_lightgbm')
+    generate_advanced_charts(model, predictions)
+    metrics = pull()
+    predictions.to_csv("charts/predictions.csv", index=False)
+    metrics.to_csv("charts/metrics.csv")
+    logging.info("Training complete. Metrics:\n%s", metrics)
 
 if __name__ == "__main__":
-    predictions = train_model()
-    print(predictions.head())
+    train()
