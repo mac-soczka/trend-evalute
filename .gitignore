@@ -15,3 +15,4 @@ venv/
 vit-base-oxford-iiit-pets
 *.log
 mlruns/
+blip2_features.csv
