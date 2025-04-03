@@ -62,7 +62,7 @@ def train_model(df):
         ("cat", categorical_transformer, categorical)
     ])
 
-    model = LGBMRegressor(random_state=42)
+    model = LGBMRegressor(random_state=42, device="gpu", boosting_type="gbdt", num_leaves=31, max_depth=10, learning_rate=0.1, n_estimators=100)
 
     pipeline = Pipeline(steps=[
         ("preprocessor", preprocessor),
