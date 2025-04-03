@@ -30,10 +30,11 @@ The core `train.py` file runs a full PyCaret-based regression training pipeline:
 - Saves predictions, residuals, charts, and model artifacts in `charts/`
 
 ### 🗂 Output Files
+
 - `charts/`: model diagnostic plots
 - `charts/predictions.csv`: actual vs predicted
 - `charts/metrics.csv`: performance metrics (R², RMSE, MAE)
-- `world_class_lightgbm.pkl`: final model
+- `model.pkl`: final model
 
 ---
 
@@ -42,7 +43,9 @@ The core `train.py` file runs a full PyCaret-based regression training pipeline:
 The project also fine-tunes and evaluates lightweight LLMs on benchmark NLP tasks.
 
 ### 🔧 Models Used
+
 ```yaml
 - nlptown/bert-base-multilingual-uncased-sentiment (max_length: 512)
 - deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B (max_length: 2048)
 - meta-llama/Llama-3.2-1B (max_length: 2048)
+```
