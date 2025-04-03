@@ -30,6 +30,27 @@ The core `train.py` file runs a full PyCaret-based regression training pipeline:
 - Trains a `LightGBM` model with `tune_model()` using Bayesian optimization
 - Saves predictions, residuals, charts, and model artifacts in `charts/`
 
+
+## 📈 Model Diagnostics
+
+This section presents key diagnostic plots generated after training the regression model. These help evaluate the model's performance, overfitting, and feature impact.
+
+### Feature Importance
+![Feature Importance](charts/EDA/Feature%20Importance.png)
+
+### Learning Curve
+![Learning Curve](charts/EDA/Learning%20Curve.png)
+
+### Prediction Error
+![Prediction Error](charts/EDA/Prediction%20Error.png)
+
+### Residuals
+![Residuals](charts/EDA/residuals.png)
+
+### Validation Curve
+![Validation Curve](charts/EDA/Validation%20Curve.png)
+
+
 ### 🗂 Output Files
 
 - `charts/`: model diagnostic plots
