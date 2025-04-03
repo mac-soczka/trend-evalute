@@ -20,22 +20,7 @@ This repository is designed to evaluate the impact of audio-visual and textual f
 ---
 
 
-## 🧪 Traditional ML Training Pipeline
-
-[YouTube ID List]
-      ↓
-[Metadata + Comments API]
-      ↓
-[Text Analysis] ——→ [LLM sentiment / zero-shot / toxicity]
-      ↓
-[Video Downloader (pytube)]
-      ↓
-[Audio Track] ——→ [wav2vec2 + librosa + speechbrain]
-      ↓
-[Video Thumbnails/Frames] ——→ [BLIP-2 / CLIP / OFA]
-      ↓
-[Aggregate Features] ——→ [DataFrame / CSV]
-
+## 🧪 Training Pipeline
 
 The core `train.py` file runs a full PyCaret-based regression training pipeline:
 
