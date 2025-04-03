@@ -22,6 +22,39 @@ This repository is designed to evaluate the impact of audio-visual and textual f
 
 ## 🧪 Training Pipeline
 
+
+## ⚙️ Automation Architecture
+
+```mermaid
+flowchart TD
+  A[YouTube Video ID List] --> B[Fetch Metadata & Comments (YouTube API)]
+  B --> C[Textual Analysis]
+  C --> C1[Sentiment Analysis (Hugging Face)]
+  C --> C2[Toxicity Detection]
+  C --> C3[Zero-shot Classification (Genre, Budget, Clickbait)]
+  
+  B --> D[Download Video (pytube/yt-dlp)]
+  D --> E[Audio Extraction]
+  E --> E1[Speech-to-Text (wav2vec2)]
+  E --> E2[Emotion, Speed, Speaker Count (speechbrain)]
+  E --> E3[Audio Stats (librosa)]
+
+  D --> F[Visual Processing (Thumbnails/Frames)]
+  F --> F1[Captioning (BLIP-2)]
+  F --> F2[Visual Classification (CLIP/OFA)]
+
+  C1 --> G[Aggregate Features]
+  C2 --> G
+  C3 --> G
+  E1 --> G
+  E2 --> G
+  E3 --> G
+  F1 --> G
+  F2 --> G
+
+  G --> H[Final Feature Matrix (CSV/Parquet/DataFrame)]
+
+
 The core `train.py` file runs a full PyCaret-based regression training pipeline:
 
 - Loads and validates data from `data/raw/*.json`
